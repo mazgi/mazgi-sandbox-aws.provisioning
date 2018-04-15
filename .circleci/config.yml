@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  terraform_fmt:
+    docker:
+      - image: mazgi/circleci-terraform
+    steps:
+      - checkout
+      - run: git submodule update --init
+      - run:
+          name: Terraform format validation with `terraform fmt`
+          command: terraform fmt -write=false -check=true -diff=true
+  test_media_processor:
+    docker:
+      - image: mazgi/circleci-aws-cli
+    steps:
+      - run:
+          name: Set AWS_ACCESS_KEY_ID to environment variable
+          command: echo "export AWS_ACCESS_KEY_ID='"${MEDIA_PROCESSOR_AWS_ACCESS_KEY_ID}"'" >> $BASH_ENV
+      - run:
+          name: Set AWS_SECRET_ACCESS_KEY to environment variable
+          command: echo "export AWS_SECRET_ACCESS_KEY='"${MEDIA_PROCESSOR_AWS_SECRET_ACCESS_KEY}"'" >> $BASH_ENV
+      - run:
+          name: Read S3 bucket
+          command: aws s3 ls s3://${AWS_ACCOUNT_NAME}-media-processor-src/
+workflows:
+  version: 2
+  test_all:
+    jobs:
+      - terraform_fmt
+      - test_media_processor
