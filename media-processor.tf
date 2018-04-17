@@ -33,11 +33,11 @@ resource "aws_s3_bucket_notification" "media-processor-src-bucket_notification" 
 data "archive_file" "media-processor-preprocess-function-archive" {
   type        = "zip"
   source_dir  = "media-processor-lambda-preprocess-function"
-  output_path = "tmp/media-processor-lambda-preprocess-function.zip"
+  output_path = "${path.module}/tmp/media-processor-lambda-preprocess-function.zip"
 }
 
 resource "aws_lambda_function" "media-processor-preprocess-function" {
-  filename         = "tmp/media-processor-lambda-preprocess-function.zip"
+  filename         = "${path.module}/tmp/media-processor-lambda-preprocess-function.zip"
   source_code_hash = "${data.archive_file.media-processor-preprocess-function-archive.output_base64sha256}"
   function_name    = "media-processor-preprocess"
   role             = "${aws_iam_role.media-processor-lambda-role.arn}"
