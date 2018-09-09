@@ -4,12 +4,11 @@ resource "aws_lb" "rev-proxy-service-rev-proxy" {
   load_balancer_type = "application"
 
   security_groups = [
-    "${aws_security_group.rev-proxy-default.id}",
-    "${aws_security_group.rev-proxy-allow-http.id}",
+    "${aws_security_group.rev-proxy-alb-allow-http.id}",
   ]
 
   subnets                    = ["${aws_subnet.rev-proxy-subnet-public.*.id}"]
-  enable_deletion_protection = true
+  enable_deletion_protection = false
 }
 
 resource "aws_lb_target_group" "rev-proxy-service-rev-proxy" {
