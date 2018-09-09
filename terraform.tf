@@ -2,7 +2,7 @@
 # Terraform configuration
 
 terraform {
-  required_version = "~> 0.10"
+  required_version = "= 0.11.7"
 
   backend "s3" {
     bucket = "mazgi-sandbox-aws-terraform"
@@ -12,6 +12,7 @@ terraform {
 }
 
 provider "aws" {
+  version    = "= 1.14.1"
   access_key = "${var.aws_access_key}"
   secret_key = "${var.aws_secret_key}"
   region     = "us-east-1"             # N. Virginia
