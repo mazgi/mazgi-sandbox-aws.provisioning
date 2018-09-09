@@ -98,9 +98,9 @@ resource "aws_route_table" "rev-proxy-private" {
   }
 }
 
-resource "aws_main_route_table_association" "rev-proxy-private" {
+resource "aws_route_table_association" "rev-proxy-private" {
   count          = "${length(var.az_cider_blocks)}"
-  vpc_id         = "${aws_vpc.rev-proxy.id}"
+  subnet_id      = "${element(aws_subnet.rev-proxy-subnet-private.*.id, count.index)}"
   route_table_id = "${element(aws_route_table.rev-proxy-private.*.id, count.index)}"
 }
 
