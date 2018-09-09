@@ -1,0 +1,20 @@
+[
+  {
+    "name": "rev-proxy",
+    "image": "nginx",
+    "portMappings": [
+      {
+        "containerPort": 80,
+        "hostPort": 80
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/aws/ecs/rev-proxy",
+        "awslogs-region": "us-east1",
+        "awslogs-stream-prefix": "rev-proxy"
+      }
+    }
+  }
+]
