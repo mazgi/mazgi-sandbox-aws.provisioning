@@ -109,16 +109,18 @@ resource "aws_security_group" "rev-proxy-default" {
   description = "rev-proxy default security group"
   vpc_id      = "${aws_vpc.rev-proxy.id}"
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags {
     "Name" = "rev-proxy-default"
   }
+}
+
+resource "aws_security_group_rule" "rev-proxy-default-rule-0" {
+  security_group_id = "${aws_security_group.rev-proxy-default.id}"
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group" "rev-proxy-vpc" {
@@ -126,16 +128,18 @@ resource "aws_security_group" "rev-proxy-vpc" {
   description = "rev-proxy VPC security group"
   vpc_id      = "${aws_vpc.rev-proxy.id}"
 
-  ingress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    self      = true
-  }
-
   tags {
     "Name" = "rev-proxy-vpc"
   }
+}
+
+resource "aws_security_group_rule" "rev-proxy-vpc-rule-0" {
+  security_group_id = "${aws_security_group.rev-proxy-vpc.id}"
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  self              = true
 }
 
 resource "aws_security_group" "rev-proxy-allow-ssh" {
@@ -143,15 +147,18 @@ resource "aws_security_group" "rev-proxy-allow-ssh" {
   description = "rev-proxy SSH security group"
   vpc_id      = "${aws_vpc.rev-proxy.id}"
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-  }
-
   tags {
     "Name" = "rev-proxy-allow-ssh"
   }
+}
+
+resource "aws_security_group_rule" "rev-proxy-allow-ssh-rule-0" {
+  security_group_id = "${aws_security_group.rev-proxy-allow-ssh.id}"
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group" "rev-proxy-allow-http" {
@@ -159,19 +166,25 @@ resource "aws_security_group" "rev-proxy-allow-http" {
   description = "rev-proxy HTTP/HTTPS security group"
   vpc_id      = "${aws_vpc.rev-proxy.id}"
 
-  ingress {
-    from_port = 80
-    to_port   = 80
-    protocol  = "tcp"
-  }
-
-  ingress {
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
-  }
-
   tags {
     "Name" = "rev-proxy-allow-http"
   }
+}
+
+resource "aws_security_group_rule" "rev-proxy-allow-http-rule-0" {
+  security_group_id = "${aws_security_group.rev-proxy-allow-http.id}"
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "rev-proxy-allow-http-rule-1" {
+  security_group_id = "${aws_security_group.rev-proxy-allow-http.id}"
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
 }
