@@ -1,7 +1,3 @@
-locals {
-  az_cider_blocks = ["a", "b"]
-}
-
 resource "aws_vpc" "rev-proxy" {
   cidr_block           = "10.0.0.0/20"
   enable_dns_hostnames = true
@@ -36,36 +32,36 @@ resource "aws_internet_gateway" "rev-proxy" {
 }
 
 resource "aws_subnet" "rev-proxy-subnet-public" {
-  count                   = "${length(local.az_cider_blocks)}"
+  count                   = "${length(var.az_cider_blocks)}"
   vpc_id                  = "${aws_vpc.rev-proxy.id}"
   cidr_block              = "10.0.${count.index}.0/24"
-  availability_zone       = "us-east-1${element(local.az_cider_blocks, count.index)}"
+  availability_zone       = "us-east-1${element(var.az_cider_blocks, count.index)}"
   map_public_ip_on_launch = true
 
   tags {
-    "Name" = "rev-proxy-subnet-public-us-east-1${element(local.az_cider_blocks, count.index)}"
+    "Name" = "rev-proxy-subnet-public-us-east-1${element(var.az_cider_blocks, count.index)}"
   }
 }
 
 resource "aws_subnet" "rev-proxy-subnet-private" {
-  count                   = "${length(local.az_cider_blocks)}"
+  count                   = "${length(var.az_cider_blocks)}"
   vpc_id                  = "${aws_vpc.rev-proxy.id}"
   cidr_block              = "10.0.${count.index + 8}.0/24"
-  availability_zone       = "us-east-1${element(local.az_cider_blocks, count.index)}"
+  availability_zone       = "us-east-1${element(var.az_cider_blocks, count.index)}"
   map_public_ip_on_launch = true
 
   tags {
-    "Name" = "rev-proxy-subnet-private-us-east-1${element(local.az_cider_blocks, count.index)}"
+    "Name" = "rev-proxy-subnet-private-us-east-1${element(var.az_cider_blocks, count.index)}"
   }
 }
 
 resource "aws_eip" "rev-proxy-nat_gateway-eip" {
-  count = "${length(local.az_cider_blocks)}"
+  count = "${length(var.az_cider_blocks)}"
   vpc   = true
 }
 
 resource "aws_nat_gateway" "rev-proxy" {
-  count         = "${length(local.az_cider_blocks)}"
+  count         = "${length(var.az_cider_blocks)}"
   subnet_id     = "${element(aws_subnet.rev-proxy-subnet-private.*.id, count.index)}"
   allocation_id = "${element(aws_eip.rev-proxy-nat_gateway-eip.*.id, count.index)}"
 }
@@ -89,7 +85,7 @@ resource "aws_main_route_table_association" "rev-proxy-default" {
 }
 
 resource "aws_route_table" "rev-proxy-private" {
-  count  = "${length(local.az_cider_blocks)}"
+  count  = "${length(var.az_cider_blocks)}"
   vpc_id = "${aws_vpc.rev-proxy.id}"
 
   route {
@@ -98,12 +94,12 @@ resource "aws_route_table" "rev-proxy-private" {
   }
 
   tags {
-    "Name" = "rev-proxy-private-us-east-1${element(local.az_cider_blocks, count.index)}"
+    "Name" = "rev-proxy-private-us-east-1${element(var.az_cider_blocks, count.index)}"
   }
 }
 
 resource "aws_main_route_table_association" "rev-proxy-private" {
-  count          = "${length(local.az_cider_blocks)}"
+  count          = "${length(var.az_cider_blocks)}"
   vpc_id         = "${aws_vpc.rev-proxy.id}"
   route_table_id = "${element(aws_route_table.rev-proxy-private.*.id, count.index)}"
 }
