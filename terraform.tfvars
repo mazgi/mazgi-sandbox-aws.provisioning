@@ -1,1 +1,1 @@
-secret/terraform.tfvars
+secrets/terraform.tfvars
