@@ -17,6 +17,10 @@ resource "aws_lb_target_group" "rev-proxy-service-rev-proxy" {
   protocol    = "HTTP"
   vpc_id      = "${aws_vpc.rev-proxy.id}"
   target_type = "ip"
+
+  health_check {
+    path = "/"
+  }
 }
 
 resource "aws_lb_listener" "rev-proxy-service-rev-proxy-http" {
@@ -28,4 +32,6 @@ resource "aws_lb_listener" "rev-proxy-service-rev-proxy-http" {
     type             = "forward"
     target_group_arn = "${aws_lb_target_group.rev-proxy-service-rev-proxy.arn}"
   }
+
+  depends_on = ["aws_lb_target_group.rev-proxy-service-rev-proxy"]
 }

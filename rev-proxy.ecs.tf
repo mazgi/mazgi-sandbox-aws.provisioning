@@ -7,7 +7,7 @@ resource "aws_ecs_task_definition" "rev-proxy-task-rev-proxy" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
 
-  # see: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html
+  # see: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_size
   cpu                   = 256
   memory                = 512
   container_definitions = "${file("rev-proxy/aws_ecs_task_definition/rev-proxy-task-rev-proxy/container_definitions.json")}"
@@ -28,10 +28,16 @@ resource "aws_ecs_service" "rev-proxy-service-rev-proxy" {
   }
 
   network_configuration {
-    subnets = ["${aws_subnet.rev-proxy-subnet-private.*.id}"]
+    subnets = [
+      "${aws_subnet.rev-proxy-subnet-private.*.id}",
+    ]
 
     security_groups = [
       "${aws_security_group.rev-proxy-ec2-allow-http-from-alb.id}",
     ]
   }
+
+  depends_on = [
+    "aws_lb_listener.rev-proxy-service-rev-proxy-http",
+  ]
 }
